@@ -7,134 +7,9 @@
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/highcharts-more.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
-    <style>
-        :root {
-            --primary-color: #2196F3;  /* Couleur pour IPS */
-            --secondary-color: #f44336; /* Couleur pour ASTRE */
-            --background-color: #fafafa;
-            --text-color: #333;
-        }
+    <link rel="stylesheet" href="style.css">
 
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-        }
-
-        #container {
-            min-height: 600px;
-            width: 100%;
-            margin: 20px auto;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            background: white;
-            padding: 20px;
-        }
-
-        .controls {
-            margin: 10px;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            width: auto;
-            min-width: 400px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .controls h3 {
-            margin: 0 0 15px 0;
-            color: var(--text-color);
-            font-size: 1.2em;
-            font-weight: 500;
-        }&
-
-        .controls input[type="range"] {
-            width: 300px;
-            margin: 10px;
-            -webkit-appearance: none;
-            height: 6px;
-            background: #ddd;
-            border-radius: 3px;
-            outline: none;
-        }
-
-        .controls input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            background: var(--primary-color);
-            border-radius: 50%;
-            cursor: pointer;
-            transition: background .2s;
-        }
-
-        .controls input[type="range"]::-webkit-slider-thumb:hover {
-            background: #1976D2;
-        }
-
-        .controls label {
-            margin-right: 15px;
-            font-weight: 500;
-            color: var(--text-color);
-        }
-
-        .value-display {
-            display: inline-block;
-            min-width: 40px;
-            margin-left: 10px;
-            background: var(--primary-color);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-weight: 500;
-        }
-
-        #ponderationControl {
-            display: none;
-        }
-
-        /* Styles pour différencier IPS et ASTRE */
-        .ips-text {
-            color: var(--primary-color);
-        }
-        
-        .astre-text {
-            color: var(--secondary-color);
-        }
-
-        #stats {
-            text-align: center;
-            margin-top: 20px;
-            padding: 10px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .stat-item {
-            display: inline-block;
-            margin: 0 20px;
-            font-size: 16px;
-            font-weight: 500;
-        }
-
-        .ips-stat {
-            color: var(--primary-color);
-        }
-
-        .astre-stat {
-            color: var(--secondary-color);
-        }
-    </style>
+    
 </head>
 <body>
 <div id="container"></div>
@@ -161,13 +36,18 @@
         <input type="range" id="ponderation" min="1" max="5" step="1" onchange="updatePonderation(this.value)">
         <span id="ponderationValue" class="value-display"></span>
     </div>
+    <div id="liberteControl" style="display: none;">
+        <label for="liberte">Degré de liberté:</label>
+        <input type="range" id="liberte" min="1" max="5" step="1" onchange="updateLiberte(this.value)">
+        <span id="liberteValue" class="value-display"></span>
+    </div>
 </div>
 
 <script type="text/javascript">
 let globalData = null;
 let criteres = {};
 let currentPonderation = 3;
-let currentDegreImportance = 3;
+let currentDegreLiberte = 3;
 let selectedCritere = "";
 let originalScores = {};
 
@@ -177,18 +57,28 @@ function updatePonderation(value) {
     recalculerScores();
 }
 
+function updateLiberte(value) {
+    currentDegreLiberte = parseFloat(value);
+    document.getElementById('liberteValue').textContent = value;
+    recalculerScores();
+}
+
 function updateCritere(critere) {
     selectedCritere = critere;
     if (!critere) {
         document.getElementById('ponderationControl').style.display = 'none';
+        document.getElementById('liberteControl').style.display = 'none';
         return;
     }
     
     currentPonderation = criteres[critere].ponderation;
-    currentDegreImportance = criteres[critere].degre_d_importance;
+    currentDegreLiberte = criteres[critere].degre_liberte;
     document.getElementById('ponderation').value = currentPonderation;
+    document.getElementById('liberte').value = currentDegreLiberte;
     document.getElementById('ponderationValue').textContent = currentPonderation;
+    document.getElementById('liberteValue').textContent = currentDegreLiberte;
     document.getElementById('ponderationControl').style.display = 'block';
+    document.getElementById('liberteControl').style.display = 'block';
     recalculerScores();
 }
 
@@ -216,8 +106,10 @@ function recalculerScores() {
         
         if (selectedCritere) {
             const oldPonderation = criteres[selectedCritere].ponderation;
-            const scoreDiff = score * (currentPonderation - oldPonderation) / oldPonderation;
-            score = Math.min(score + scoreDiff, 100);
+            const oldDegreLiberte = criteres[selectedCritere].degre_liberte;
+            const scoreDiffPonderation = score * (currentPonderation - oldPonderation) / oldPonderation;
+            const scoreDiffLiberte = score * (currentDegreLiberte - oldDegreLiberte) / oldDegreLiberte;
+            score = Math.min(score + scoreDiffPonderation + scoreDiffLiberte, 100);
         }
         
         const filiere = score < 50 ? "ASTRE" : "IPS";
@@ -332,11 +224,11 @@ fetch('criteres.csv')
     .then(data => {
         const lines = data.split('\n');
         lines.slice(1).forEach(line => {
-            const [critere, ponderation, degre_d_importance] = line.split(',');
-            if (critere && ponderation && degre_d_importance) {
+            const [critere, ponderation, degre_liberte] = line.split(',');
+            if (critere && ponderation && degre_liberte) {
                 criteres[critere] = {
                     ponderation: parseFloat(ponderation),
-                    degre_d_importance: parseFloat(degre_d_importance)
+                    degre_liberte: parseFloat(degre_liberte)
                 };
                 const option = document.createElement('option');
                 option.value = critere;

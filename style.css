@@ -1,0 +1,106 @@
+:root {
+    --primary-color: #0D47A1; /* Couleur pour IPS */
+    --secondary-color: #B71C1C; /* Couleur pour ASTRE */
+    --background-color: #f0f4f8;
+    --text-color: #212121;
+    --hover-color: #1565C0; /* Couleur pour hover */
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: background-color 0.3s;
+}
+
+#container {
+    min-height: 600px;
+    width: 100%;
+    margin: 20px auto;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    background: white;
+    padding: 20px;
+}
+
+.controls {
+    width: 100%; 
+    max-width: 600px; 
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.controls input[type="range"] {
+    width: 300px;
+    margin: 10px;
+    -webkit-appearance: none;
+    height: 8px;
+    background: #ccc;
+    border-radius: 5px;
+    outline: none;
+    transition: background 0.3s;
+}
+
+.controls input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.controls input[type="range"]::-webkit-slider-thumb:hover {
+    background: var(--hover-color);
+    transform: scale(1.1);
+}
+
+.controls label {
+    margin-right: 10px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.value-display {
+    display: inline-block;
+    min-width: 40px;
+    margin-left: 8px;
+    background: var(--primary-color);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#stats {
+    text-align: center;
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stat-item {
+    display: inline-block;
+    margin: 0 15px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.ips-stat {
+    color: var(--primary-color);
+}
+
+.astre-stat {
+    color: var(--secondary-color);
+}
